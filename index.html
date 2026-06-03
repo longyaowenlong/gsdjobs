@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>報班查詢系統</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a2e;
+    --ink2: #3d3d5c;
+    --muted: #7a7a99;
+    --line: #e2e2ef;
+    --bg: #f7f7fc;
+    --surface: #ffffff;
+    --accent: #3b5bdb;
+    --accent-light: #eef1ff;
+    --success: #2f9e44;
+    --success-light: #ebfbee;
+    --danger: #c92a2a;
+    --danger-light: #fff5f5;
+    --shadow: 0 2px 16px rgba(59,91,219,0.07);
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    height: 64px;
+    gap: 14px;
+  }
+  .logo-mark {
+    width: 36px; height: 36px;
+    background: var(--accent);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .logo-mark svg { width: 20px; height: 20px; fill: #fff; }
+  .logo-text { font-family: 'Noto Serif TC', serif; font-size: 17px; font-weight: 600; color: var(--ink); }
+  .logo-sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
+
+  /* ── Main ── */
+  main { max-width: 860px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+  /* ── Tab ── */
+  .tab-bar {
+    display: flex; gap: 4px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 4px;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow);
+  }
+  .tab-btn {
+    flex: 1; padding: 10px 8px;
+    border: none; background: transparent;
+    border-radius: 9px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 14px; font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .tab-btn.active {
+    background: var(--accent); color: #fff;
+    box-shadow: 0 2px 8px rgba(59,91,219,0.25);
+  }
+  .tab-btn:not(.active):hover { background: var(--accent-light); color: var(--accent); }
+
+  /* ── Search Card ── */
+  .search-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.75rem 2rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+  }
+  .card-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 15px; font-weight: 600;
+    color: var(--ink2);
+    margin-bottom: 1.25rem;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card-title::before {
+    content: '';
+    display: block; width: 4px; height: 16px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem 1.25rem;
+  }
+  @media (max-width: 560px) { .form-grid { grid-template-columns: 1fr; } }
+
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field.full { grid-column: 1 / -1; }
+
+  label {
+    font-size: 12px; font-weight: 500;
+    color: var(--muted);
+    letter-spacing: .03em;
+  }
+  .required::after { content: ' *'; color: var(--accent); }
+
+  input {
+    height: 42px; padding: 0 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 14px; color: var(--ink);
+    background: var(--bg);
+    transition: border-color .15s, box-shadow .15s;
+    outline: none;
+  }
+  input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(59,91,219,0.12);
+    background: #fff;
+  }
+  input::placeholder { color: #bbb; }
+
+  .hint { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .btn-row { margin-top: 1.5rem; display: flex; gap: 10px; align-items: center; }
+
+  .btn-primary {
+    height: 44px; padding: 0 28px;
+    background: var(--accent);
+    color: #fff; border: none;
+    border-radius: 9px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 14px; font-weight: 500;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 8px;
+    transition: all .2s;
+  }
+  .btn-primary:hover { background: #2f4bbf; box-shadow: 0 4px 12px rgba(59,91,219,0.3); transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-primary:disabled { background: #b0b8e8; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .btn-ghost {
+    height: 44px; padding: 0 20px;
+    background: transparent; color: var(--muted);
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 14px; cursor: pointer;
+    transition: all .15s;
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+  /* ── Spinner ── */
+  .spinner {
+    display: none; align-items: center; gap: 8px;
+    font-size: 13px; color: var(--muted);
+  }
+  .spinner.show { display: flex; }
+  .spin-ring {
+    width: 18px; height: 18px;
+    border: 2px solid var(--line);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Result Area ── */
+  .result-area { animation: fadeUp .3s ease; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .result-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 1rem; flex-wrap: wrap; gap: 8px;
+  }
+  .result-count {
+    font-size: 13px; color: var(--muted);
+  }
+  .result-count strong { color: var(--accent); font-size: 18px; font-weight: 600; }
+
+  .table-wrap { overflow-x: auto; }
+  table {
+    width: 100%; border-collapse: collapse;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    font-size: 13px;
+  }
+  thead { background: var(--ink); color: #fff; }
+  th {
+    padding: 11px 14px; text-align: left;
+    font-size: 11px; font-weight: 500;
+    letter-spacing: .06em;
+    white-space: nowrap;
+  }
+  td {
+    padding: 11px 14px;
+    border-top: 1px solid var(--line);
+    color: var(--ink2);
+    vertical-align: middle;
+  }
+  tr:hover td { background: var(--accent-light); }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 10px; border-radius: 99px;
+    font-size: 11px; font-weight: 500;
+  }
+  .badge-ok { background: var(--success-light); color: var(--success); }
+  .badge-pending { background: #fff9db; color: #845f00; }
+  .badge-no { background: var(--danger-light); color: var(--danger); }
+
+  /* ── Empty / Error ── */
+  .state-box {
+    text-align: center;
+    padding: 3rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+  .state-icon { font-size: 40px; margin-bottom: .75rem; }
+  .state-title { font-size: 15px; font-weight: 500; color: var(--ink2); margin-bottom: 6px; }
+  .state-sub { font-size: 13px; color: var(--muted); }
+
+  /* ── Notice ── */
+  .notice {
+    background: var(--accent-light);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: .75rem 1rem;
+    font-size: 12px;
+    color: var(--ink2);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-mark">
+    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+  </div>
+  <div>
+    <div class="logo-text">報班查詢系統</div>
+    <div class="logo-sub">線上查詢報班及錄取狀態</div>
+  </div>
+</header>
+
+<main>
+
+  <!-- Tab 切換 -->
+  <div class="tab-bar" role="tablist">
+    <button class="tab-btn active" role="tab" onclick="switchTab('register')">📋 報班名單查詢</button>
+    <button class="tab-btn" role="tab" onclick="switchTab('admit')">🎓 正式錄取名單查詢</button>
+  </div>
+
+  <!-- ── 報班名單 ── -->
+  <div id="tab-register">
+    <div class="notice">
+      ⚠️ 查詢報班名單需輸入<strong>身分證字號</strong>、<strong>出生年月日</strong>及<strong>報班年月</strong>，三項缺一不可。
+    </div>
+    <div class="search-card">
+      <div class="card-title">報班查詢條件</div>
+      <div class="form-grid">
+        <div class="field">
+          <label class="required">身分證字號</label>
+          <input id="r-id" type="text" placeholder="A123456789" maxlength="10" autocomplete="off">
+        </div>
+        <div class="field">
+          <label class="required">出生年月日</label>
+          <input id="r-birth" type="text" placeholder="例：19900101 或 900101" maxlength="8">
+          <span class="hint">西元或民國均可，格式：YYYYMMDD 或 YYMMDD</span>
+        </div>
+        <div class="field">
+          <label class="required">報班年月</label>
+          <input id="r-ym" type="text" placeholder="例：202501 或 1140101" maxlength="7">
+          <span class="hint">西元年月（YYYYMM）或民國年月（YYYMM）</span>
+        </div>
+        <div class="field">
+          <label>班別（選填）</label>
+          <input id="r-class" type="text" placeholder="可留空查詢所有班別">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-primary" id="btn-register" onclick="queryRegister()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          開始查詢
+        </button>
+        <button class="btn-ghost" onclick="clearForm('register')">清除</button>
+        <div class="spinner" id="spin-register"><div class="spin-ring"></div>查詢中…</div>
+      </div>
+    </div>
+    <div id="result-register"></div>
+  </div>
+
+  <!-- ── 錄取名單 ── -->
+  <div id="tab-admit" style="display:none">
+    <div class="notice">
+      📌 正式錄取名單查詢：可輸入姓名、身分證字號、或班別其中一項以上進行查詢。
+    </div>
+    <div class="search-card">
+      <div class="card-title">錄取查詢條件</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>姓名</label>
+          <input id="a-name" type="text" placeholder="請輸入姓名">
+        </div>
+        <div class="field">
+          <label>身分證字號</label>
+          <input id="a-id" type="text" placeholder="A123456789" maxlength="10">
+        </div>
+        <div class="field">
+          <label>班別</label>
+          <input id="a-class" type="text" placeholder="班別名稱">
+        </div>
+        <div class="field">
+          <label>錄取年月</label>
+          <input id="a-ym" type="text" placeholder="例：202501">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-primary" id="btn-admit" onclick="queryAdmit()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          開始查詢
+        </button>
+        <button class="btn-ghost" onclick="clearForm('admit')">清除</button>
+        <div class="spinner" id="spin-admit"><div class="spin-ring"></div>查詢中…</div>
+      </div>
+    </div>
+    <div id="result-admit"></div>
+  </div>
+
+</main>
+
+<script>
+// ══════════════════════════════════════════
+// ★ 請將下方換成您的 GAS 部署網址
+// ══════════════════════════════════════════
+const GAS_URL = 'https://script.google.com/macros/s/【貼上您的部署ID】/exec';
+
+// ── Tab 切換 ──
+function switchTab(tab) {
+  document.getElementById('tab-register').style.display = tab === 'register' ? '' : 'none';
+  document.getElementById('tab-admit').style.display    = tab === 'admit'    ? '' : 'none';
+  document.querySelectorAll('.tab-btn').forEach((b, i) => {
+    b.classList.toggle('active', (i === 0 && tab === 'register') || (i === 1 && tab === 'admit'));
+  });
+}
+
+// ── 清除 ──
+function clearForm(type) {
+  if (type === 'register') {
+    ['r-id','r-birth','r-ym','r-class'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('result-register').innerHTML = '';
+  } else {
+    ['a-name','a-id','a-class','a-ym'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('result-admit').innerHTML = '';
+  }
+}
+
+// ── 驗證身分證字號格式 ──
+function validateID(id) {
+  return /^[A-Z][12]\d{8}$/.test(id.toUpperCase());
+}
+
+// ── 呼叫 GAS API ──
+async function callGAS(params) {
+  const url = GAS_URL + '?' + new URLSearchParams(params).toString();
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('伺服器回應異常：' + res.status);
+  return res.json();
+}
+
+// ── 查詢報班名單 ──
+async function queryRegister() {
+  const idVal    = document.getElementById('r-id').value.trim().toUpperCase();
+  const birthVal = document.getElementById('r-birth').value.trim();
+  const ymVal    = document.getElementById('r-ym').value.trim();
+  const classVal = document.getElementById('r-class').value.trim();
+
+  if (!idVal || !birthVal || !ymVal) {
+    showError('result-register', '請填寫必填欄位：身分證字號、出生年月日、報班年月');
+    return;
+  }
+  if (!validateID(idVal)) {
+    showError('result-register', '身分證字號格式不正確，請確認後重新輸入');
+    return;
+  }
+
+  setLoading('register', true);
+  try {
+    const data = await callGAS({ type: 'register', id: idVal, birth: birthVal, ym: ymVal, class: classVal });
+    renderRegisterResult(data);
+  } catch (e) {
+    showError('result-register', '查詢失敗：' + e.message);
+  }
+  setLoading('register', false);
+}
+
+// ── 查詢錄取名單 ──
+async function queryAdmit() {
+  const nameVal  = document.getElementById('a-name').value.trim();
+  const idVal    = document.getElementById('a-id').value.trim().toUpperCase();
+  const classVal = document.getElementById('a-class').value.trim();
+  const ymVal    = document.getElementById('a-ym').value.trim();
+
+  if (!nameVal && !idVal && !classVal) {
+    showError('result-admit', '請至少輸入一項查詢條件（姓名、身分證字號、或班別）');
+    return;
+  }
+
+  setLoading('admit', true);
+  try {
+    const data = await callGAS({ type: 'admit', name: nameVal, id: idVal, class: classVal, ym: ymVal });
+    renderAdmitResult(data);
+  } catch (e) {
+    showError('result-admit', '查詢失敗：' + e.message);
+  }
+  setLoading('admit', false);
+}
+
+// ── 顯示報班結果 ──
+function renderRegisterResult(data) {
+  const el = document.getElementById('result-register');
+  if (!data.success) { showError('result-register', data.message || '查詢失敗'); return; }
+  const rows = data.rows || [];
+  if (rows.length === 0) { showEmpty('result-register', '查無符合的報班紀錄', '請確認輸入資料是否正確'); return; }
+
+  el.innerHTML = `
+    <div class="result-area">
+      <div class="result-meta">
+        <div class="result-count">共找到 <strong>${rows.length}</strong> 筆報班紀錄</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>姓名</th>
+              <th>班別</th>
+              <th>報班年月</th>
+              <th>報班日期</th>
+              <th>狀態</th>
+              <th>備註</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map(r => `
+              <tr>
+                <td><strong>${esc(r.name || '')}</strong></td>
+                <td>${esc(r.className || '')}</td>
+                <td>${esc(r.ym || '')}</td>
+                <td>${esc(r.date || '')}</td>
+                <td>${statusBadge(r.status)}</td>
+                <td style="color:var(--muted)">${esc(r.note || '—')}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+// ── 顯示錄取結果 ──
+function renderAdmitResult(data) {
+  const el = document.getElementById('result-admit');
+  if (!data.success) { showError('result-admit', data.message || '查詢失敗'); return; }
+  const rows = data.rows || [];
+  if (rows.length === 0) { showEmpty('result-admit', '查無符合的錄取紀錄', '請確認是否已通過正式錄取'); return; }
+
+  el.innerHTML = `
+    <div class="result-area">
+      <div class="result-meta">
+        <div class="result-count">共找到 <strong>${rows.length}</strong> 筆錄取紀錄</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>姓名</th>
+              <th>班別</th>
+              <th>錄取年月</th>
+              <th>錄取日期</th>
+              <th>錄取狀態</th>
+              <th>備註</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map(r => `
+              <tr>
+                <td><strong>${esc(r.name || '')}</strong></td>
+                <td>${esc(r.className || '')}</td>
+                <td>${esc(r.ym || '')}</td>
+                <td>${esc(r.date || '')}</td>
+                <td>${admitBadge(r.status)}</td>
+                <td style="color:var(--muted)">${esc(r.note || '—')}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+// ── 工具函式 ──
+function esc(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function statusBadge(s) {
+  const map = { '已報名':'badge-ok', '待審核':'badge-pending', '取消':'badge-no' };
+  const cls = map[s] || 'badge-pending';
+  return `<span class="badge ${cls}">${esc(s || '待確認')}</span>`;
+}
+
+function admitBadge(s) {
+  const map = { '正式錄取':'badge-ok', '備取':'badge-pending', '未錄取':'badge-no' };
+  const cls = map[s] || 'badge-pending';
+  return `<span class="badge ${cls}">${esc(s || '—')}</span>`;
+}
+
+function setLoading(type, on) {
+  document.getElementById('spin-' + type).classList.toggle('show', on);
+  document.getElementById('btn-' + type).disabled = on;
+}
+
+function showError(targetId, msg) {
+  document.getElementById(targetId).innerHTML = `
+    <div class="state-box">
+      <div class="state-icon">⚠️</div>
+      <div class="state-title">${esc(msg)}</div>
+      <div class="state-sub">請確認資料後重新查詢，或聯絡承辦人員</div>
+    </div>`;
+}
+
+function showEmpty(targetId, title, sub) {
+  document.getElementById(targetId).innerHTML = `
+    <div class="state-box">
+      <div class="state-icon">🔍</div>
+      <div class="state-title">${esc(title)}</div>
+      <div class="state-sub">${esc(sub)}</div>
+    </div>`;
+}
+</script>
+</body>
+</html>
