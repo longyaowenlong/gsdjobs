@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>報名查詢系統</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0f1d3a;
+  --navy2: #1a2f5a;
+  --blue: #1d5fcc;
+  --blue-lt: #e8f0fc;
+  --teal: #0d9488;
+  --teal-lt: #e6f7f5;
+  --gold: #d97706;
+  --gold-lt: #fef3c7;
+  --red: #dc2626;
+  --red-lt: #fee2e2;
+  --gray: #64748b;
+  --line: #e2e8f0;
+  --bg: #f1f5f9;
+  --white: #ffffff;
+  --text: #1e293b;
+  --text2: #475569;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 4px 24px rgba(15,29,58,0.10);
+  --shadow-sm: 0 2px 8px rgba(15,29,58,0.07);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 15px;
+}
+
+/* ── Header ── */
+.header {
+  background: var(--navy);
+  padding: 0;
+  position: sticky; top: 0; z-index: 100;
+}
+.header-inner {
+  max-width: 600px; margin: 0 auto;
+  padding: 14px 20px;
+  display: flex; align-items: center; gap: 12px;
+}
+.header-icon {
+  width: 38px; height: 38px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.header-title { color: #fff; font-size: 16px; font-weight: 700; letter-spacing: .02em; }
+.header-sub { color: rgba(255,255,255,0.5); font-size: 11px; margin-top: 1px; }
+
+/* ── Scroll Tabs ── */
+.tab-wrap {
+  background: var(--navy2);
+  padding: 0 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tab-wrap::-webkit-scrollbar { display: none; }
+.tab-inner {
+  display: flex; gap: 0;
+  max-width: 600px; margin: 0 auto;
+}
+.tab-btn {
+  flex-shrink: 0;
+  padding: 12px 20px;
+  background: transparent; border: none;
+  color: rgba(255,255,255,0.5);
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all .2s;
+  white-space: nowrap;
+}
+.tab-btn.active {
+  color: #fff;
+  border-bottom-color: #60a5fa;
+}
+.tab-btn:not(.active):hover { color: rgba(255,255,255,0.8); }
+
+/* ── Page Content ── */
+.page { display: none; max-width: 600px; margin: 0 auto; padding: 20px 16px 80px; }
+.page.active { display: block; animation: fadeIn .2s ease; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+/* ── Section Card ── */
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 14px;
+}
+.card-label {
+  font-size: 11px; font-weight: 700;
+  color: var(--gray);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+/* ── Field ── */
+.field { margin-bottom: 14px; }
+.field:last-child { margin-bottom: 0; }
+label {
+  display: block;
+  font-size: 12px; font-weight: 500;
+  color: var(--text2);
+  margin-bottom: 6px;
+}
+.req { color: var(--blue); }
+
+input[type=text], input[type=date], select {
+  width: 100%; height: 48px;
+  padding: 0 14px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 15px; color: var(--text);
+  background: var(--white);
+  -webkit-appearance: none;
+  appearance: none;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+input[type=text]:focus, input[type=date]:focus, select:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(29,95,204,0.12);
+}
+input::placeholder { color: #b0b8c8; }
+
+.select-wrap { position: relative; }
+.select-wrap::after {
+  content: '▾';
+  position: absolute; right: 14px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--gray); pointer-events: none;
+  font-size: 14px;
+}
+select { padding-right: 36px; cursor: pointer; }
+
+/* Region Toggle */
+.region-toggle { display: flex; gap: 8px; }
+.region-btn {
+  flex: 1; height: 48px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 15px; font-weight: 500;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all .15s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.region-btn.active-north {
+  border-color: var(--blue);
+  background: var(--blue-lt);
+  color: var(--blue);
+}
+.region-btn.active-south {
+  border-color: var(--teal);
+  background: var(--teal-lt);
+  color: var(--teal);
+}
+
+/* ── CTA Button ── */
+.btn-submit {
+  width: 100%; height: 52px;
+  background: var(--navy);
+  color: #fff; border: none;
+  border-radius: var(--radius-sm);
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 16px; font-weight: 700;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: all .2s;
+  letter-spacing: .04em;
+}
+.btn-submit:active { transform: scale(0.98); }
+.btn-submit:disabled { background: #94a3b8; cursor: not-allowed; }
+.btn-submit.north-mode { background: var(--blue); }
+.btn-submit.south-mode { background: var(--teal); }
+.btn-submit.admit-mode { background: var(--navy); }
+
+/* ── Loader ── */
+.loader {
+  display: none;
+  flex-direction: column; align-items: center; justify-content: center;
+  padding: 3rem 1rem; gap: 12px;
+}
+.loader.show { display: flex; }
+.loader-ring {
+  width: 36px; height: 36px;
+  border: 3px solid var(--line);
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+.loader-text { font-size: 13px; color: var(--gray); }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Result Card ── */
+.result-area { animation: fadeIn .25s ease; }
+
+.result-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.result-count { font-size: 13px; color: var(--gray); }
+.result-count strong { color: var(--navy); font-size: 20px; font-weight: 700; }
+
+.result-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+/* Mobile: stack cards instead of table */
+.result-items { display: flex; flex-direction: column; gap: 10px; }
+
+.result-item {
+  background: var(--white);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+}
+.item-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 10px;
+}
+.item-name { font-size: 16px; font-weight: 700; color: var(--text); }
+.item-rows { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
+.item-field { }
+.item-key { font-size: 10px; font-weight: 700; color: var(--gray); letter-spacing:.06em; margin-bottom: 2px; }
+.item-val { font-size: 13px; color: var(--text); font-weight: 500; }
+.item-val.mono { font-family: monospace; font-size: 12px; }
+
+.badge {
+  display: inline-flex; align-items: center;
+  padding: 3px 10px; border-radius: 99px;
+  font-size: 11px; font-weight: 700; letter-spacing: .04em;
+}
+.badge-ok    { background: #dcfce7; color: #15803d; }
+.badge-wait  { background: var(--gold-lt); color: var(--gold); }
+.badge-no    { background: var(--red-lt); color: var(--red); }
+.badge-blue  { background: var(--blue-lt); color: var(--blue); }
+
+/* ── State Boxes ── */
+.state-box {
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  padding: 3rem 1.5rem;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+.state-emoji { font-size: 44px; margin-bottom: .75rem; }
+.state-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.state-sub { font-size: 13px; color: var(--gray); line-height: 1.7; }
+
+/* Closed notice */
+.notice-box {
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  font-size: 13px;
+  line-height: 1.7;
+  margin-bottom: 14px;
+}
+.notice-info { background: var(--blue-lt); color: #1d4ed8; border-left: 3px solid var(--blue); }
+.notice-warn { background: var(--gold-lt); color: #92400e; border-left: 3px solid var(--gold); }
+
+/* ── Hint ── */
+.hint { font-size: 11px; color: var(--gray); margin-top: 4px; }
+
+/* ── Divider ── */
+.divider { height: 1px; background: var(--line); margin: 14px 0; }
+
+/* ── Safe area bottom ── */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .page { padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-icon">📋</div>
+    <div>
+      <div class="header-title">報名查詢系統</div>
+      <div class="header-sub">線上查詢報班 · 錄取名單</div>
+    </div>
+  </div>
+  <div class="tab-wrap">
+    <div class="tab-inner">
+      <button class="tab-btn active" onclick="switchTab('register')">報班名單查詢</button>
+      <button class="tab-btn" onclick="switchTab('admit')">正式錄取名單查詢</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ 報班名單 ════════════ -->
+<div class="page active" id="page-register">
+
+  <div class="notice-box notice-info">
+    ℹ️ 請填寫以下資料進行身份驗證，三項資料須完整且正確才可查詢。
+  </div>
+
+  <div class="card">
+    <div class="card-label">查詢條件</div>
+
+    <div class="field">
+      <label>查詢區域 <span class="req">*</span></label>
+      <div class="region-toggle">
+        <button class="region-btn" id="btn-north" onclick="setRegion('north')">🏙 北部</button>
+        <button class="region-btn" id="btn-south" onclick="setRegion('south')">🌴 南部</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>身分證字號 <span class="req">*</span></label>
+      <input type="text" id="r-id" placeholder="A123456789" maxlength="10" autocomplete="off"
+        oninput="this.value=this.value.toUpperCase()">
+    </div>
+
+    <div class="field">
+      <label>出生年月日 <span class="req">*</span></label>
+      <input type="text" id="r-birth" placeholder="例：19900101">
+      <div class="hint">請輸入西元或民國年月日，8碼數字（如 19900101 或 790101）</div>
+    </div>
+
+    <div class="field">
+      <label>查詢報班年月 <span class="req">*</span></label>
+      <input type="text" id="r-ym" placeholder="例：202506" maxlength="7">
+      <div class="hint">格式：yyyyMM（如 202506 代表 2025年6月）</div>
+    </div>
+  </div>
+
+  <button class="btn-submit" id="btn-r-submit" onclick="queryRegister()">
+    🔍 開始查詢
+  </button>
+
+  <div class="divider"></div>
+
+  <div class="loader" id="loader-r">
+    <div class="loader-ring"></div>
+    <div class="loader-text">查詢中，請稍候…</div>
+  </div>
+
+  <div id="result-r"></div>
+</div>
+
+<!-- ════════════ 錄取名單 ════════════ -->
+<div class="page" id="page-admit">
+
+  <div class="notice-box notice-warn">
+    ⏰ 正式錄取名單依開放時間顯示，若名單尚未公告請稍後再試。
+  </div>
+
+  <div class="card">
+    <div class="card-label">查詢條件</div>
+
+    <div class="field">
+      <label>倉別 <span class="req">*</span></label>
+      <div class="select-wrap">
+        <select id="a-warehouse">
+          <option value="">— 載入中… —</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>查閱日期 <span class="req">*</span></label>
+      <input type="date" id="a-date">
+      <div class="hint">預設為明天，可手動調整</div>
+    </div>
+  </div>
+
+  <button class="btn-submit admit-mode" id="btn-a-submit" onclick="queryAdmit()">
+    🔍 查詢錄取名單
+  </button>
+
+  <div class="divider"></div>
+
+  <div class="loader" id="loader-a">
+    <div class="loader-ring"></div>
+    <div class="loader-text">查詢中，請稍候…</div>
+  </div>
+
+  <div id="result-a"></div>
+</div>
+
+<script>
+// ═══════════════════════════════
+// ★ 請替換為您的 GAS 部署網址
+// ═══════════════════════════════
+const GAS_URL = 'https://script.google.com/macros/s/【貼上您的部署網址】/exec';
+
+let selectedRegion = '';
+
+// ── Tab 切換 ──
+function switchTab(tab) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + tab).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+// ── 區域選擇 ──
+function setRegion(r) {
+  selectedRegion = r;
+  const nb = document.getElementById('btn-north');
+  const sb = document.getElementById('btn-south');
+  nb.className = 'region-btn' + (r === 'north' ? ' active-north' : '');
+  sb.className = 'region-btn' + (r === 'south' ? ' active-south' : '');
+  const sub = document.getElementById('btn-r-submit');
+  sub.className = 'btn-submit ' + (r === 'north' ? 'north-mode' : 'south-mode');
+}
+
+// ── 設定明天為預設日期 ──
+function setTomorrow() {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  const s = d.toISOString().split('T')[0];
+  document.getElementById('a-date').value = s;
+}
+
+// ── 載入倉別選項 ──
+async function loadWarehouses() {
+  try {
+    const url = GAS_URL + '?type=warehouses';
+    const res = await fetch(url);
+    const data = await res.json();
+    const sel = document.getElementById('a-warehouse');
+    sel.innerHTML = '<option value="">— 請選擇倉別 —</option>';
+    (data.warehouses || []).forEach(w => {
+      const opt = document.createElement('option');
+      opt.value = w; opt.textContent = w;
+      sel.appendChild(opt);
+    });
+  } catch(e) {
+    document.getElementById('a-warehouse').innerHTML = '<option value="">載入失敗，請重新整理</option>';
+  }
+}
+
+// ── 身分證驗證 ──
+function validateID(id) {
+  return /^[A-Z][12]\d{8}$/.test(id);
+}
+
+// ── 呼叫 GAS ──
+async function callGAS(params) {
+  const url = GAS_URL + '?' + new URLSearchParams(params).toString();
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  return res.json();
+}
+
+// ── 查詢報班名單 ──
+async function queryRegister() {
+  const region = selectedRegion;
+  const id     = document.getElementById('r-id').value.trim().toUpperCase();
+  const birth  = document.getElementById('r-birth').value.trim();
+  const ym     = document.getElementById('r-ym').value.trim();
+
+  if (!region)  return showError('result-r', '請選擇查詢區域（北部 / 南部）');
+  if (!id)      return showError('result-r', '請輸入身分證字號');
+  if (!validateID(id)) return showError('result-r', '身分證字號格式不正確，請確認後重試');
+  if (!birth)   return showError('result-r', '請輸入出生年月日');
+  if (!ym)      return showError('result-r', '請輸入查詢報班年月');
+
+  setLoading('r', true);
+  document.getElementById('result-r').innerHTML = '';
+  try {
+    const data = await callGAS({ type: 'register', region, id, birth, ym });
+    renderRegister(data);
+  } catch(e) {
+    showError('result-r', '查詢失敗，請稍後再試（' + e.message + '）');
+  }
+  setLoading('r', false);
+}
+
+// ── 查詢錄取名單 ──
+async function queryAdmit() {
+  const warehouse = document.getElementById('a-warehouse').value;
+  const date      = document.getElementById('a-date').value;
+
+  if (!warehouse) return showError('result-a', '請選擇倉別');
+  if (!date)      return showError('result-a', '請選擇查閱日期');
+
+  setLoading('a', true);
+  document.getElementById('result-a').innerHTML = '';
+  try {
+    const data = await callGAS({ type: 'admit', warehouse, date });
+    renderAdmit(data);
+  } catch(e) {
+    showError('result-a', '查詢失敗，請稍後再試（' + e.message + '）');
+  }
+  setLoading('a', false);
+}
+
+// ── 渲染報班結果 ──
+function renderRegister(data) {
+  const el = document.getElementById('result-r');
+  if (!data.success) return showError('result-r', data.message || '查詢失敗');
+  const rows = data.rows || [];
+  if (rows.length === 0) {
+    el.innerHTML = `<div class="state-box">
+      <div class="state-emoji">🔍</div>
+      <div class="state-title">查無報班紀錄</div>
+      <div class="state-sub">查無符合條件的報班資料，<br>請確認輸入資料是否正確</div>
+    </div>`;
+    return;
+  }
+  const regionLabel = selectedRegion === 'north' ? '北部' : '南部';
+  el.innerHTML = `<div class="result-area">
+    <div class="result-header">
+      <div class="result-count">找到 <strong>${rows.length}</strong> 筆紀錄</div>
+      <span class="badge badge-blue">${regionLabel}</span>
+    </div>
+    <div class="result-items">
+      ${rows.map(r => `
+        <div class="result-item">
+          <div class="item-header">
+            <div class="item-name">${esc(r.colA || '')}</div>
+            ${statusBadge(r.colG || '')}
+          </div>
+          <div class="item-rows">
+            <div class="item-field">
+              <div class="item-key">身分證字號</div>
+              <div class="item-val mono">${esc(r.colB || '')}</div>
+            </div>
+            <div class="item-field">
+              <div class="item-key">班別代碼</div>
+              <div class="item-val">${esc(r.colC || '')}</div>
+            </div>
+            <div class="item-field">
+              <div class="item-key">班別名稱</div>
+              <div class="item-val">${esc(r.colD || '')}</div>
+            </div>
+            <div class="item-field">
+              <div class="item-key">報班日期</div>
+              <div class="item-val">${esc(r.colE || '')}</div>
+            </div>
+          </div>
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+// ── 渲染錄取結果 ──
+function renderAdmit(data) {
+  const el = document.getElementById('result-a');
+  if (!data.success) return showError('result-a', data.message || '查詢失敗');
+
+  // 特殊狀態訊息
+  if (data.status === 'closed') {
+    el.innerHTML = `<div class="state-box">
+      <div class="state-emoji">🔒</div>
+      <div class="state-title">名單已關閉</div>
+      <div class="state-sub">該正式錄取名單已被關閉，<br>請洽派遣公司</div>
+    </div>`;
+    return;
+  }
+  if (data.status === 'not_open') {
+    el.innerHTML = `<div class="state-box">
+      <div class="state-emoji">⏳</div>
+      <div class="state-title">名單尚未公告</div>
+      <div class="state-sub">正式錄取名單尚未公告，<br>請稍後再查詢</div>
+    </div>`;
+    return;
+  }
+
+  const rows = data.rows || [];
+  if (rows.length === 0) {
+    el.innerHTML = `<div class="state-box">
+      <div class="state-emoji">📭</div>
+      <div class="state-title">查無錄取名單</div>
+      <div class="state-sub">此倉別在該日期尚無錄取名單資料</div>
+    </div>`;
+    return;
+  }
+
+  // 欄位說明：
+  //   colC = 派遣公司（C欄）
+  //   colD = 姓名（D欄）
+  //   colF = 倉別（F欄）
+  //   colB = 班別（B欄）
+  //   colE = 交通車（E欄，空值顯示「自行前往」）
+  el.innerHTML = `<div class="result-area">
+    <div class="result-header">
+      <div class="result-count">共 <strong>${rows.length}</strong> 筆錄取</div>
+      <span class="badge badge-ok">✓ 正式錄取</span>
+    </div>
+    <div class="result-items">
+      ${rows.map((r, i) => {
+        const transport = r.colE ? esc(r.colE) : '自行前往';
+        const transportStyle = r.colE
+          ? 'color:var(--teal);font-weight:600'
+          : 'color:var(--gray)';
+        return `
+        <div class="result-item">
+          <!-- 主標題：姓名 + 序號 -->
+          <div class="item-header">
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:32px;height:32px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0">${i+1}</div>
+              <div class="item-name">${esc(r.colD || '—')}</div>
+            </div>
+            <span class="badge badge-ok">錄取</span>
+          </div>
+
+          <!-- 派遣公司 + 倉別：最重要資訊，全寬顯示 -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+            <div class="item-field">
+              <div class="item-key">派遣公司</div>
+              <div class="item-val" style="font-size:14px">${esc(r.colC || '—')}</div>
+            </div>
+            <div class="item-field">
+              <div class="item-key">倉別</div>
+              <div class="item-val" style="font-size:14px;color:var(--blue);font-weight:700">${esc(r.colF || '—')}</div>
+            </div>
+          </div>
+
+          <!-- 班別 -->
+          <div class="item-field" style="margin-bottom:10px">
+            <div class="item-key">班別</div>
+            <div class="item-val">${esc(r.colB || '—')}</div>
+          </div>
+
+          <!-- 交通車：用特殊樣式區隔 -->
+          <div style="background:var(--bg);border-radius:8px;padding:10px 12px;display:flex;align-items:center;gap:8px">
+            <span style="font-size:18px">${r.colE ? '🚌' : '🚶'}</span>
+            <div>
+              <div class="item-key" style="margin-bottom:1px">交通車</div>
+              <div class="item-val" style="${transportStyle}">${transport}</div>
+            </div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+// ── Helpers ──
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function statusBadge(s) {
+  const map = {
+    '已報名': 'badge-ok',
+    '待審核': 'badge-wait',
+    '取消':   'badge-no',
+  };
+  return `<span class="badge ${map[s] || 'badge-wait'}">${esc(s || '待確認')}</span>`;
+}
+
+function setLoading(t, on) {
+  document.getElementById('loader-' + t).classList.toggle('show', on);
+  document.getElementById('btn-' + t + '-submit').disabled = on;
+}
+
+function showError(targetId, msg) {
+  document.getElementById(targetId).innerHTML = `
+    <div class="state-box">
+      <div class="state-emoji">⚠️</div>
+      <div class="state-title">${esc(msg)}</div>
+      <div class="state-sub">請確認輸入資料後重試，<br>或聯絡系統管理人員</div>
+    </div>`;
+}
+
+// ── Init ──
+setTomorrow();
+loadWarehouses();
+</script>
+</body>
+</html>
