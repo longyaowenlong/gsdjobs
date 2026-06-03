@@ -438,7 +438,7 @@ function setTomorrow() {
 // ── 載入倉別選項 ──
 async function loadWarehouses() {
   try {
-    const url = https://script.google.com/macros/s/AKfycbwpdFZjuLkjuZchOwjGXuVbDnQrQel8nPtVEjLutdPfxRA71PBFx7zMrOs0BBcJ7l5-MA/exec + '?type=warehouses';
+    const url = GAS_URL + '?type=warehouses';
     const res = await fetch(url);
     const data = await res.json();
     const sel = document.getElementById('a-warehouse');
@@ -460,7 +460,7 @@ function validateID(id) {
 
 // ── 呼叫 GAS ──
 async function callGAS(params) {
-  const url = https://script.google.com/macros/s/AKfycbwpdFZjuLkjuZchOwjGXuVbDnQrQel8nPtVEjLutdPfxRA71PBFx7zMrOs0BBcJ7l5-MA/exec + '?' + new URLSearchParams(params).toString();
+  const url = GAS_URL + '?' + new URLSearchParams(params).toString();
   const res = await fetch(url);
   if (!res.ok) throw new Error('HTTP ' + res.status);
   return res.json();
